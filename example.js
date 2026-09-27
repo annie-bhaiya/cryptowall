@@ -1,9 +1,9 @@
 /**
- * CircuitBreaker-AI — Live JEV Probability Test Application
+ * CryptoWall — Live JEV Probability Test Application
  *
  * Connects to the real TypeSafe AI JEV endpoint using the credentials in .env.
  * Demonstrates how JEV calculates calibrated exploit probabilities [0.0, 1.0]
- * in real-time and how CircuitBreaker's policy engine gates each transaction.
+ * in real-time and how CryptoWall's policy engine gates each transaction.
  *
  * Run:
  *   node example.js
@@ -13,12 +13,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import {
+  createCryptoWallClient,
   createCircuitBreakerClient,
+  CryptoWallBlockedError,
   CircuitBreakerBlockedError,
   createUserOperationInterceptor,
   JevClient,
   PolicyEngine,
-} from "@breaker/viem-middleware";
+} from "@cryptowall/viem-middleware";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 
@@ -160,7 +162,7 @@ const MALICIOUS_UO_CALLDATA =
 // ── Main Execution ───────────────────────────────────────────────────────────
 
 async function run() {
-  banner("⚡ CircuitBreaker-AI — Live JEV Probability Decision Engine Test App");
+  banner("⚡ CryptoWall — Live JEV Probability Decision Engine Test App");
 
   const endpoint = process.env.JEV_ENDPOINT || "https://api.typesafe.ai/v1/systemone";
   const rawKey = process.env.JEV_API_KEY || "";
@@ -169,11 +171,11 @@ async function run() {
   console.log(`  Live JEV Endpoint: ${c.green}${endpoint}${c.reset}`);
   console.log(`  Live JEV API Key:  ${c.cyan}${maskedKey}${c.reset}`);
   console.log(`  Policy Engine:     Strict (70.0%) | Permissive (92.0%) | Audit (∞)`);
-  console.log(`  Middleware SDK:    @breaker/viem-middleware v1.0.0\n`);
+  console.log(`  Middleware SDK:    @cryptowall/viem-middleware v1.0.0\n`);
 
   const results = [];
 
-  const client = createCircuitBreakerClient({
+  const client = createCryptoWallClient({
     rpcUrl: "http://127.0.0.1:8546",
     policy: "strict",
     jevEndpoint: endpoint,
@@ -291,7 +293,7 @@ async function run() {
   // ───────────────────────────────────────────────────────────────────────────
   subheader("4. Local Heuristic Fallback (Zero Network Dependency)");
   console.log(`  Scenario:     Remote JEV API is offline or exceeds ANALYSIS_TIMEOUT_MS`);
-  console.log(`  Mechanism:    CircuitBreaker runs local heuristic fallback without latency penalty`);
+  console.log(`  Mechanism:    CryptoWall runs local heuristic fallback without latency penalty`);
 
   const t3 = Date.now();
   const fallbackDecision = jev.heuristicFallback({

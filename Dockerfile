@@ -1,4 +1,4 @@
-# ─── CircuitBreaker-AI — Dockerfile ──────────────────────────────────────────
+# ─── CryptoWall — Dockerfile ──────────────────────────────────────────
 # Multi-stage build: compile TypeScript → minimal production image
 
 # ── Stage 1: Build ────────────────────────────────────────────────────────────
@@ -19,7 +19,7 @@ RUN npm run build
 FROM node:20-alpine AS runner
 
 # Non-root user for security
-RUN addgroup -S breaker && adduser -S breaker -G breaker
+RUN addgroup -S cryptowall && adduser -S cryptowall -G cryptowall
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
-USER breaker
+USER cryptowall
 
 # Expose proxy port
 EXPOSE 8545

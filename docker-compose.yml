@@ -1,4 +1,4 @@
-# ─── CircuitBreaker-AI — docker-compose ──────────────────────────────────────
+# ─── CryptoWall — docker-compose ──────────────────────────────────────
 # Usage:
 #   docker compose up               — single proxy, strict mode
 #   docker compose --profile scale up — 3-replica cluster behind nginx
@@ -10,8 +10,8 @@ services:
   # ── Single-node proxy (default) ─────────────────────────────────────────────
   proxy:
     build: .
-    image: circuitbreaker-ai:latest
-    container_name: circuitbreaker-proxy
+    image: cryptowall:latest
+    container_name: cryptowall-proxy
     restart: unless-stopped
     ports:
       - "${PORT:-8545}:8545"
@@ -38,7 +38,7 @@ services:
   # ── Scale profile: nginx load-balancer + 3 proxy replicas ────────────────────
   proxy-scaled:
     build: .
-    image: circuitbreaker-ai:latest
+    image: cryptowall:latest
     restart: unless-stopped
     profiles: [scale]
     deploy:
@@ -66,7 +66,7 @@ services:
   nginx:
     image: nginx:1.27-alpine
     profiles: [scale]
-    container_name: circuitbreaker-lb
+    container_name: cryptowall-lb
     restart: unless-stopped
     ports:
       - "${PORT:-8545}:80"

@@ -1,5 +1,5 @@
 /**
- * jest.config.js — CircuitBreaker-AI test suite
+ * jest.config.js — CryptoWall test suite
  *
  * Uses ts-jest in ESM mode to support:
  *   - "type": "module" in package.json

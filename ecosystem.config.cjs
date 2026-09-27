@@ -1,8 +1,8 @@
-// ─── PM2 Ecosystem — CircuitBreaker-AI ───────────────────────────────────────
+// ─── PM2 Ecosystem — CryptoWall ───────────────────────────────────────
 // Usage:
 //   pm2 start ecosystem.config.cjs              — single process
 //   pm2 start ecosystem.config.cjs --env prod   — production cluster mode
-//   pm2 start ecosystem.config.cjs --only circuitbreaker-audit
+//   pm2 start ecosystem.config.cjs --only cryptowall-audit
 //
 // Note: uses .cjs extension so PM2 can require() it regardless of "type":"module"
 
@@ -12,7 +12,7 @@ module.exports = {
   apps: [
     // ── Default: single process, strict policy ────────────────────────────────
     {
-      name:         "circuitbreaker",
+      name:         "cryptowall",
       script:       "dist/server.js",
       interpreter:  "node",
       instances:    1,
@@ -46,7 +46,7 @@ module.exports = {
 
     // ── Cluster: 1 process per CPU core, strict policy ────────────────────────
     {
-      name:         "circuitbreaker-cluster",
+      name:         "cryptowall-cluster",
       script:       "dist/server.js",
       interpreter:  "node",
       instances:    "max",          // one per vCPU
@@ -70,7 +70,7 @@ module.exports = {
 
     // ── Audit node: never blocks, logs every decision ─────────────────────────
     {
-      name:         "circuitbreaker-audit",
+      name:         "cryptowall-audit",
       script:       "dist/server.js",
       interpreter:  "node",
       instances:    1,

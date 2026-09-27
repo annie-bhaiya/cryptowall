@@ -1,8 +1,8 @@
-# Integration Test Suite Plan — CircuitBreaker-AI
+# Integration Test Suite Plan — CryptoWall
 
 ## Top-Level Overview
 
-Build a complete Jest + Anvil integration test suite for the CircuitBreaker-AI proxy.
+Build a complete Jest + Anvil integration test suite for the CryptoWall proxy.
 The suite spins up a local Anvil fork (or falls back to a mock RPC) as the upstream, starts the Fastify proxy server in-process, mocks the JEV AI endpoint with `msw` (Mock Service Worker), then fires real JSON-RPC requests at the proxy to exercise the full pipeline end-to-end.
 
 **Anvil mode:** `ANVIL=1` env flag swaps the mock RPC handler for a real Anvil process on `http://127.0.0.1:8546`. Default is fully offline MSW mocks.

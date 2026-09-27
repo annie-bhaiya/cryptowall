@@ -1,4 +1,4 @@
-# ⚡ @breaker/viem-middleware
+# ⚡ @cryptowall/viem-middleware
 
 **Ultra-low latency middleware SDK and JSON-RPC proxy for Web3 builders.**
 
@@ -6,14 +6,14 @@ Intercepts, simulates, and AI-audits every transaction before it hits the mempoo
 
 ```ts
 // One line. Drop-in for any viem client.
-const client = createCircuitBreakerClient({ rpcUrl, policy: "strict" });
+const client = createCryptoWallClient({ rpcUrl, policy: "strict" });
 ```
 
 ---
 
-## Why CircuitBreaker?
+## Why CryptoWall?
 
-Most Web3 security tools are binary afterthoughts — they block or don't, with no reasoning. CircuitBreaker runs a full analysis pipeline on every outbound transaction and gives you a **calibrated typed decision matrix**:
+Most Web3 security tools are binary afterthoughts — they block or don't, with no reasoning. CryptoWall runs a full analysis pipeline on every outbound transaction and gives you a **calibrated typed decision matrix**:
 
 ```ts
 {
@@ -39,7 +39,7 @@ The analysis gate is **send-only**. All read calls (`eth_call`, `eth_getLogs`, `
 ## Install
 
 ```bash
-npm install @breaker/viem-middleware
+npm install @cryptowall/viem-middleware
 # peer dep
 npm install viem
 ```
@@ -49,13 +49,13 @@ npm install viem
 ## Quick Start — SDK
 
 ```ts
-import { createCircuitBreakerClient, CircuitBreakerBlockedError } from "@breaker/viem-middleware";
+import { createCryptoWallClient, CryptoWallBlockedError } from "@cryptowall/viem-middleware";
 import { mainnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 const account = privateKeyToAccount("0x...");
 
-const client = createCircuitBreakerClient({
+const client = createCryptoWallClient({
   rpcUrl:  "https://mainnet.infura.io/v3/YOUR_KEY",
   policy:  "strict",                    // strict | permissive | audit
   chain:   mainnet,
@@ -68,7 +68,7 @@ const client = createCircuitBreakerClient({
 
   // Optional: hook on blocked transactions
   onBlock: (decision, tx) => {
-    metrics.increment("circuitbreaker.blocked", { category: decision.risk_category });
+    metrics.increment("cryptowall.blocked", { category: decision.risk_category });
   },
 });
 
@@ -82,7 +82,7 @@ try {
     value: parseEther("0.5"),
   });
 } catch (err) {
-  if (err instanceof CircuitBreakerBlockedError) {
+  if (err instanceof CryptoWallBlockedError) {
     console.log(err.decision.risk_category);       // "sandwich_exposure"
     console.log(err.decision.exploit_probability); // 0.94
     console.log(err.decision.severity_score);      // 4
@@ -104,7 +104,7 @@ try {
 ### Custom Thresholds
 
 ```ts
-const client = createCircuitBreakerClient({
+const client = createCryptoWallClient({
   rpcUrl:  "https://...",
   policy:  "strict",
   thresholds: {
@@ -120,7 +120,7 @@ const client = createCircuitBreakerClient({
 
 ## 🧪 JEV Probability Test App (`example.js`)
 
-A standalone test application is included in [`example.js`](./example.js) connecting to the authentic **TypeSafe AI JEV API** (`https://api.typesafe.ai/v1/systemone`) using your `.env` credentials (`JEV_API_KEY`). It demonstrates how **JEV (Reinforcement Learning from Calibrated Decisions)** calculates and outputs continuous exploit probabilities (`0.00` to `1.00`), and how CircuitBreaker's policy engine translates those probabilities into deterministic actions (`ALLOW`, `WARN`, `BLOCK`).
+A standalone test application is included in [`example.js`](./example.js) connecting to the authentic **TypeSafe AI JEV API** (`https://api.typesafe.ai/v1/systemone`) using your `.env` credentials (`JEV_API_KEY`). It demonstrates how **JEV (Reinforcement Learning from Calibrated Decisions)** calculates and outputs continuous exploit probabilities (`0.00` to `1.00`), and how CryptoWall's policy engine translates those probabilities into deterministic actions (`ALLOW`, `WARN`, `BLOCK`).
 
 ### How JEV Probability Works
 
@@ -129,7 +129,7 @@ Unlike standard LLMs that generate conversational or qualitative text ("this loo
 - **Elevated Slippage / MEV:** Yields intermediate risk classifications (`sandwich_exposure`, severity 3/5) triggering policy warnings.
 - **High-Risk Phishing Drainers:** Accurately classified as `malicious_approval` with severity 4/5 and elevated probability, triggering immediate blocking under strict policy.
 - **ERC-4337 Smart Account Interception:** Decodes nested calls in `execute(to, value, data)` and intercepts malicious approvals before account abstraction bundler submission.
-- **Offline / Fallback Resilience:** If the remote JEV API times out or is unreachable, CircuitBreaker's local heuristic engine computes calibrated decisions locally (0ms) without stalling user flows.
+- **Offline / Fallback Resilience:** If the remote JEV API times out or is unreachable, CryptoWall's local heuristic engine computes calibrated decisions locally (0ms) without stalling user flows.
 
 ### Running the Test App
 
@@ -143,17 +143,17 @@ node example.js
 
 ### Evaluated Scenarios & Live Results
 
-When executing `node example.js` against the live TypeSafe AI JEV endpoint, the test app evaluates 5 distinct real-world transaction patterns through the full CircuitBreaker analysis pipeline:
+When executing `node example.js` against the live TypeSafe AI JEV endpoint, the test app evaluates 5 distinct real-world transaction patterns through the full CryptoWall analysis pipeline:
 
 ```
 ════════════════════════════════════════════════════════════════════════════
-  ⚡ CircuitBreaker-AI — Live JEV Probability Decision Engine Test App
+  ⚡ CryptoWall — Live JEV Probability Decision Engine Test App
 ════════════════════════════════════════════════════════════════════════════
 
   Live JEV Endpoint: https://api.typesafe.ai/v1/systemone
   Live JEV API Key:  apikey_220...691b2e
   Policy Engine:     Strict (70.0%) | Permissive (92.0%) | Audit (∞)
-  Middleware SDK:    @breaker/viem-middleware v1.0.0
+  Middleware SDK:    @cryptowall/viem-middleware v1.0.0
 
 ────────────────────────────────────────────────────────────────────────────
   1. Benign ERC-20 Transfer (1,000 USDC)
@@ -204,7 +204,7 @@ When executing `node example.js` against the live TypeSafe AI JEV endpoint, the 
   4. Local Heuristic Fallback (Zero Network Dependency)
 ────────────────────────────────────────────────────────────────────────────
   Scenario:     Remote JEV API is offline or exceeds ANALYSIS_TIMEOUT_MS
-  Mechanism:    CircuitBreaker runs local heuristic fallback without latency penalty
+  Mechanism:    CryptoWall runs local heuristic fallback without latency penalty
 
   Local Heuristic Output (1ms):
   • Exploit Probability: [██████████████░░░░░░] 72.0%
@@ -273,7 +273,7 @@ When executing `node example.js` against the live TypeSafe AI JEV endpoint, the 
 For smart account (AA) wallets and liquidation bots:
 
 ```ts
-import { createUserOperationInterceptor } from "@breaker/viem-middleware";
+import { createUserOperationInterceptor } from "@cryptowall/viem-middleware";
 
 const interceptor = createUserOperationInterceptor({
   rpcUrl: "https://...",
@@ -294,7 +294,7 @@ const safeOps = await interceptor.filter(pendingUserOps);
 const batch = await interceptor.inspectBatch(pendingUserOps);
 // batch.approved_count, batch.blocked_count, batch.total_latency_ms
 
-// Assert single op (throws CircuitBreakerBlockedError on block)
+// Assert single op (throws CryptoWallBlockedError on block)
 await interceptor.assert(userOp);
 ```
 
@@ -321,7 +321,7 @@ if (decision.severity_score >= 3) {
 
 ## JSON-RPC Proxy Server
 
-Run CircuitBreaker as a standalone proxy in front of any RPC endpoint.  
+Run CryptoWall as a standalone proxy in front of any RPC endpoint.  
 Any wallet, DApp, or bot that speaks JSON-RPC points at `localhost:8545`.
 
 ```bash
@@ -364,7 +364,7 @@ When a transaction is blocked, the proxy returns a standard JSON-RPC error with 
   "id": 1,
   "error": {
     "code": -32003,
-    "message": "[CircuitBreaker-AI] Transaction blocked. Exploit probability 94.2% exceeds 70% threshold.",
+    "message": "[CryptoWall] Transaction blocked. Exploit probability 94.2% exceeds 70% threshold.",
     "data": {
       "decision": {
         "risk_category":       "sandwich_exposure",
@@ -382,7 +382,7 @@ When a transaction is blocked, the proxy returns a standard JSON-RPC error with 
 
 ## Simulation Engine
 
-CircuitBreaker runs `debug_traceCall` (Geth / Erigon / Hardhat / Tenderly) before every send, extracting:
+CryptoWall runs `debug_traceCall` (Geth / Erigon / Hardhat / Tenderly) before every send, extracting:
 
 - **ERC-20 transfers and approvals** decoded from call frames  
 - **ETH value flows** across internal calls  
@@ -399,11 +399,11 @@ Falls back to a lightweight `eth_call` when the RPC doesn't support tracing.
 If you want the intercepting transport without the full client factory:
 
 ```ts
-import { createCircuitBreakerTransport } from "@breaker/viem-middleware/transport";
+import { createCryptoWallTransport } from "@cryptowall/viem-middleware/transport";
 import { createWalletClient } from "viem";
 
 const client = createWalletClient({
-  transport: createCircuitBreakerTransport({
+  transport: createCryptoWallTransport({
     rpcUrl: "https://...",
     policy: "permissive",
   }),
@@ -416,7 +416,7 @@ const client = createWalletClient({
 
 ```
                     ┌─────────────────────────────────────────┐
-  eth_sendRawTx ───▶│          CircuitBreaker Pipeline        │
+  eth_sendRawTx ───▶│          CryptoWall Pipeline        │
   eth_sendUserOp    │                                         │
                     │  1. Parse / decode payload              │
                     │  2. debug_traceCall simulation          │
@@ -439,6 +439,20 @@ const client = createWalletClient({
 
 ---
 
+
+
+---
+
+## Backwards Compatibility
+
+For existing applications transitioning from `@breaker/viem-middleware` / `CircuitBreaker-AI`, all legacy exports and type definitions remain available as direct aliases:
+- `createCircuitBreakerClient` ➔ alias for `createCryptoWallClient`
+- `createCircuitBreakerTransport` ➔ alias for `createCryptoWallTransport`
+- `CircuitBreakerBlockedError` ➔ alias for `CryptoWallBlockedError`
+- `CircuitBreakerConfig` ➔ alias for `CryptoWallConfig`
+- `CircuitBreakerClientOptions` ➔ alias for `CryptoWallClientOptions`
+- `CircuitBreakerClientResult` ➔ alias for `CryptoWallClientResult`
+
 ## License
 
-MIT — CircuitBreaker AI
+MIT — CryptoWall

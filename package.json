@@ -1,5 +1,5 @@
 {
-  "name": "@breaker/viem-middleware",
+  "name": "@cryptowall/viem-middleware",
   "version": "1.0.0",
   "description": "Ultra-low latency middleware SDK and JSON-RPC proxy for Web3 builders. Intercepts, simulates, and AI-audits every transaction before it hits the mempool.",
   "keywords": [
@@ -16,7 +16,7 @@
     "rpc-proxy",
     "transaction-simulation"
   ],
-  "author": "CircuitBreaker AI",
+  "author": "CryptoWall",
   "license": "MIT",
   "type": "module",
   "main": "./dist/sdk/index.js",
@@ -83,10 +83,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/circuitbreaker-ai/circuitbreaker-ai"
+    "url": "https://github.com/annie-bhaiya/cryptowall"
   },
   "bugs": {
-    "url": "https://github.com/circuitbreaker-ai/circuitbreaker-ai/issues"
+    "url": "https://github.com/annie-bhaiya/cryptowall/issues"
   },
-  "homepage": "https://github.com/circuitbreaker-ai/circuitbreaker-ai#readme"
+  "homepage": "https://github.com/annie-bhaiya/cryptowall#readme"
 }
