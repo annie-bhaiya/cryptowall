@@ -1,0 +1,38 @@
+﻿# ─── CircuitBreaker-AI .gitignore ─────────────────────────────────────────────
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+pids/
+*.pid
+*.seed
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage / test output
+coverage/
+.nyc_output/

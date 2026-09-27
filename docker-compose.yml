@@ -1,0 +1,81 @@
+# ─── CircuitBreaker-AI — docker-compose ──────────────────────────────────────
+# Usage:
+#   docker compose up               — single proxy, strict mode
+#   docker compose --profile scale up — 3-replica cluster behind nginx
+#
+# Secrets: set env vars or create a .env file (see .env.example)
+
+services:
+
+  # ── Single-node proxy (default) ─────────────────────────────────────────────
+  proxy:
+    build: .
+    image: circuitbreaker-ai:latest
+    container_name: circuitbreaker-proxy
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8545}:8545"
+    environment:
+      JEV_API_KEY:           ${JEV_API_KEY}
+      JEV_ENDPOINT:          ${JEV_ENDPOINT:-https://api.typesafe.ai/v1/decide}
+      UPSTREAM_RPC:          ${UPSTREAM_RPC:-https://eth.llamarpc.com}
+      PORT:                  8545
+      POLICY_MODE:           ${POLICY_MODE:-strict}
+      ANALYSIS_TIMEOUT_MS:   ${ANALYSIS_TIMEOUT_MS:-800}
+      MAX_CONCURRENT_ANALYSES: ${MAX_CONCURRENT_ANALYSES:-50}
+      NODE_ENV:              production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8545/health"]
+      interval: 15s
+      timeout:  3s
+      retries:  3
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ── Scale profile: nginx load-balancer + 3 proxy replicas ────────────────────
+  proxy-scaled:
+    build: .
+    image: circuitbreaker-ai:latest
+    restart: unless-stopped
+    profiles: [scale]
+    deploy:
+      replicas: 3
+    environment:
+      JEV_API_KEY:           ${JEV_API_KEY}
+      JEV_ENDPOINT:          ${JEV_ENDPOINT:-https://api.typesafe.ai/v1/decide}
+      UPSTREAM_RPC:          ${UPSTREAM_RPC:-https://eth.llamarpc.com}
+      PORT:                  8545
+      POLICY_MODE:           ${POLICY_MODE:-strict}
+      ANALYSIS_TIMEOUT_MS:   ${ANALYSIS_TIMEOUT_MS:-800}
+      MAX_CONCURRENT_ANALYSES: ${MAX_CONCURRENT_ANALYSES:-50}
+      NODE_ENV:              production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8545/health"]
+      interval: 15s
+      timeout:  3s
+      retries:  3
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  nginx:
+    image: nginx:1.27-alpine
+    profiles: [scale]
+    container_name: circuitbreaker-lb
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8545}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - proxy-scaled
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

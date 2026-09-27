@@ -1,0 +1,92 @@
+{
+  "name": "@breaker/viem-middleware",
+  "version": "1.0.0",
+  "description": "Ultra-low latency middleware SDK and JSON-RPC proxy for Web3 builders. Intercepts, simulates, and AI-audits every transaction before it hits the mempool.",
+  "keywords": [
+    "web3",
+    "ethereum",
+    "viem",
+    "middleware",
+    "security",
+    "mev",
+    "sandwich-attack",
+    "erc4337",
+    "account-abstraction",
+    "defi",
+    "rpc-proxy",
+    "transaction-simulation"
+  ],
+  "author": "CircuitBreaker AI",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/sdk/index.js",
+  "types": "./dist/sdk/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sdk/index.js",
+      "types": "./dist/sdk/index.d.ts"
+    },
+    "./transport": {
+      "import": "./dist/sdk/transport.js",
+      "types": "./dist/sdk/transport.d.ts"
+    },
+    "./user-operations": {
+      "import": "./dist/sdk/userOperation.js",
+      "types": "./dist/sdk/userOperation.d.ts"
+    },
+    "./policy": {
+      "import": "./dist/policy.js",
+      "types": "./dist/policy.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "types": "./dist/types.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "npx tsx src/server.ts",
+    "proxy": "npx tsx src/server.ts",
+    "proxy:strict": "POLICY_MODE=strict npx tsx src/server.ts",
+    "proxy:permissive": "POLICY_MODE=permissive npx tsx src/server.ts",
+    "proxy:audit": "POLICY_MODE=audit npx tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit",
+    "example": "node example.js"
+  },
+  "peerDependencies": {
+    "viem": ">=2.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "fastify": "^5.12.5",
+    "undici": "^8.11.2",
+    "viem": ">=2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.3",
+    "jest": "^30.5.2",
+    "msw": "^2.15.0",
+    "pino-pretty": "^13.0.0",
+    "ts-jest": "^29.4.14",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/circuitbreaker-ai/circuitbreaker-ai"
+  },
+  "bugs": {
+    "url": "https://github.com/circuitbreaker-ai/circuitbreaker-ai/issues"
+  },
+  "homepage": "https://github.com/circuitbreaker-ai/circuitbreaker-ai#readme"
+}
